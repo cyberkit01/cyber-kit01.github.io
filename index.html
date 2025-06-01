@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CYBER-KIT - HACKER INTERFACE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+  /* Reset */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  html, body {
+    height: 100%;
+    background: #0d0d0d; /* Darker background for a more sinister feel */
+    overflow: hidden;
+    font-family: 'Orbitron', monospace; /* Aggressive font */
+    color: #ff0000; /* Bright red text */
+    user-select: none;
+  }
+  /* Container for content */
+  .container {
+    position: relative;
+    z-index: 10;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 1rem;
+  }
+  h1 {
+    font-size: 4rem;
+    text-shadow:
+      0 0 10px #ff0000,
+      0 0 20px #ff0000,
+      0 0 40px #ff0000,
+      0 0 80px #f00;
+  }
+  p {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    color: #ff3333; /* Lighter red */
+    text-shadow: 0 0 6px #ff0000;
+  }
+  .subtitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+  /* Matrix Code Animation Canvas */
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+  }
+
+  /* Hacker UI Frame*/
+  .ui-frame {
+    border: 3px solid #ff0000; /* Red border */
+    border-radius: 10px;
+    padding: 2rem 3rem;
+    max-width: 850px;
+    background: rgba(0, 0, 0, 0.85); /* Darker background */
+    box-shadow:
+      0 0 10px #ff0000,
+      inset 0 0 20px #ff0000;
+    backdrop-filter: blur(4px);
+  }
+  /* Code block placeholder with shimmer effect */
+  .code-block {
+    margin-top: 2rem;
+    background: #010a00;
+    border: 1px solid #ff0000; /* Red border */
+    border-radius: 6px;
+    padding: 1rem;
+    color: #ff0000; /* Red text */
+    font-size: 1rem;
+    line-height: 1.4;
+    max-height: 180px;
+    overflow-y: auto;
+    font-family: 'Orbitron', monospace;
+    box-shadow: 0 0 15px #ff0000050;
+    position: relative;
+  }
+  /* Logo and text positioning */
+  .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+  .logo-text {
+    font-size: 2rem;
+    color: #ff0000;
+    text-shadow: 0 0 10px #ff0000;
+    margin: 0 1rem;
+  /*  animation: blur-bold 1.5s infinite alternate; /* /*Animation for blur and bold */
+  }
+  .logo-image {
+    width: 100px; /* Adjust size as needed */
+    height: auto;
+  }
+  /* RGB Animated Text */
+  .rgb-text {
+    position: fixed;
+    bottom: 20px; /* Adjust as needed */
+    right: 20px; /* Adjust as needed */
+    font-size: 2rem; /* Adjust size as needed */
+    color: #ff0000; /* Initial color */
+    animation: rgb-animation 1.5s infinite; /* Animation */
+    text-shadow: 0 0 10px #ff0000, 0 0 20px #00ff00, 0 0 30px #0000ff; /* RGB shadow */
+  }
+
+  @keyframes rgb-animation {
+    0% { color: #ff0000; }
+    33% { color: #00ff00; }
+    66% { color: #0000ff; }
+    100% { color: #ff0000; }
+  }
+
+  @keyframes blur-bold {
+    0% {
+      filter: blur(0px);
+      font-weight: normal;
+    }
+    100% {
+      filter: blur(2px);
+      font-weight: bold;
+    }
+  }
+
+  /* Mini Status Window */
+  .status-window {
+    position: fixed;
+    bottom: 100px; /* Position above the RGB text */
+    right: 20px; /* Position on the right */
+    width: 300px; /* Width of the status window */
+    max-height: 200px; /* Max height */
+    background: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    border: 2px solid #ff0000; /* Red border */
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px; /* Padding */
+    color: #00ff00; /* Green text for status */
+    font-family: 'Orbitron', monospace; /* Font */
+    overflow-y: auto; /* Scroll if content overflows */
+    box-shadow: 0 0 10px #ff0000; /* Shadow effect */
+  }
+
+  /* Side Windows */
+  .side-windows {
+    display: flex;
+    justify-content: space-between;
+    width: 100%; /* Full width */
+    margin-top: 20px; /* Space above */
+  }
+  .side-window {
+    width: 45%; /* Width of each side window */
+    max-height: 150px; /* Max height */
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    border: 2px solid #ff0000; /* Red border */
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px; /* Padding */
+    color: #00ff00; /* Green text */
+    font-family: 'Orbitron', monospace; /* Font */
+    overflow-y: auto; /* Scroll if content overflows */
+    box-shadow: 0 0 10px #ff0000; /* Shadow effect */
+  }
+
+  /*:Mr.B:CEO & Founder Text with RGB Animation */
+  .ceo-founder {
+    margin-top: 20px; /* Space above */
+    font-size: 1.5rem; /* Font size */
+    text-shadow: 0 0 10px #00ff00; /* Glow effect */
+    animation: rgb-animation 1.5s infinite; /* RGB Animation */
+  }
+
+  /* Real-Time Date and Time Window */
+  .date-time-window {
+    position: fixed;
+    top: 20px; /* Position at the top */
+    right: 20px; /* Position on the right */
+    width: 100px; /* Minimized width of the date/time window */
+    background: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    border: 2px solid #ff0000; /* Red border */
+    border-radius: 10px; /* Rounded corners */
+    padding: 5px; /* Padding */
+    color: #00ff00; /* Green text */
+    font-family: 'Orbitron', monospace; /* Font */
+    text-align: center; /* Center text */
+    box-shadow: 0 0 10px #ff0000; /* Shadow effect */
+  }
+
+  /* Window Animation GIF */
+  .window-animation {
+    margin-top: 20px; /* Space above */
+    width: 100%; /* Full width */
+    max-height: 200px; /* Max height */
+    display: none; /* Initially hidden */
+  }
+
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+
+<div class="container">
+  <div class="ui-frame">
+    <div class="logo-container">
+      <span class="logo-text">CYBER-KIT</span>
+      <img src="assets/evillogo.gif" alt="Evil Logo" class="logo-image" id="evilLogo" /> <!-- Updated to point to the GIF -->
+    </div>
+    <p class="subtitle">hello! I am Mr.B Well-Come To My SHADOW NETWORK</p>
+
+    <div class="code-block" id="codeBlock">
+/1/ social-media password fishing....................................................................................................................
+/2/ Remote access ........................................................................................................................................................
+/3/ cctv hacking.................................................................................................................................................................
+/4/ firewalls Bypassing tool's...............................................................................................................................
+/5/ auto malware remover .....................................................................................................................................
+/6/ fishing sensitive data............................................................................................................................................
+/7/ security protocols.................................................................................................................................................
+/8/ Initiating system.........................................................................................................................................................
+/9/ Encrypting stolen files...................................................................................................................................
+/10/ Command and control established..................................................................................................
+    </div>
+    
+    <!-- Side Windows for Status -->
+    <div class="side-windows">
+      <div class="side-window" id="attackWindow">
+        <h3>Whatsapp Contact :   </h3>
+        
+        <h3 style="color: cyan;"> +918010102163</h3>
+        <div id="serverStatus">Initializing...</div> 
+        
+
+      </div>
+      <div class="side-window" id="serverStatusWindow">
+        <h3>Gmail Contact : </h3>
+      <h3 style="color: cyan;"> cyberkit.official@gmail.com</h3>
+    <div id="serverStatus">Initializing...</div> 
+
+Here’s 
+
+
+      </div>
+    </div>
+
+    <!-- CEO & Founder Text -->
+    <div class="ceo-founder">
+      CEO & Founder: Cyber-Kit {Cyber Security Services}
+    </div>
+
+    <!-- Real-Time Date and Time Window -->
+    <div class="date-time-window" id="dateTimeWindow">
+      <h3>Date & Time</h3>
+      <div id="currentDateTime">Loading...</div>
+    </div>
+
+    <!-- Window Animation GIF -->
+    <img src="assets/windowanimation.gif" alt="Window Animation" class="window-animation" id="windowAnimation" />
+  </div>
+</div>
+
+<!-- RGB Animated Text -->
+<div class="rgb-text">Mr.B</div>
+
+<!-- Mini Status Window -->
+<div class="status-window" id="statusWindow">
+  <h3>System Status</h3>
+  <div id="statusContent">
+    Initializing...
+  </div>
+</div>
+
+<script>
+  // Matrix style code animation in canvas
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
+
+  // Set canvas full screen
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const letters = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:<>,.?/~'.split('');
+  const fontSize = 18;
+  const columns = Math.floor(canvas.width / fontSize);
+
+  // An array to store y positions of the drops for each column
+  const drops = [];
+  for (let x = 0; x < columns; x++) {
+    drops[x] = Math.random() * canvas.height;
+  }
+
+  function draw() {
+    // Black background with transparency for trail effect
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Alternate colors for text
+    for (let i = 0; i < drops.length; i++) {
+      const text = letters[Math.floor(Math.random() * letters.length)];
+      ctx.fillStyle = (i % 2 === 0) ? '#00ff00' : '#ff0000'; // Green and Red text
+      ctx.font = fontSize + 'px monospace';
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+      // Sending drop back to the top randomly after it passes the bottom
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+
+      drops[i] += 1;
+    }
+  }
+
+  setInterval(draw, 50);
+
+  // Responsive canvas resize
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  // Simulate real-time system status updates
+  const statusContent = document.getElementById('statusContent');
+  const statusMessages = [
+    "Initializing...",
+    "Scanning for vulnerabilities...",
+    "Bypassing security protocols...",
+    "Accessing target systems...",
+    "Data extraction in progress...",
+    "System takeover successful!",
+    "Command and control established."
+  ];
+
+  let statusIndex = 0;
+  setInterval(() => {
+    statusContent.textContent = statusMessages[statusIndex];
+    statusIndex = (statusIndex + 1) % statusMessages.length;
+  }, 3000); // Change status every 3 seconds
+
+  // Simulate Mr.B Attack status
+  const attackStatus = document.getElementById('attackStatus');
+  const attackMessages = [
+    "Initiating Mr.B Attack...",
+    "Target acquired...",
+    "Deploying attack vectors...",
+    "Bypassing defenses...",
+    "Attack in progress...",
+    "Attack successful!"
+  ];
+  let attackIndex = 0;
+  setInterval(() => {
+    attackStatus.textContent = attackMessages[attackIndex];
+    attackIndex = (attackIndex + 1) % attackMessages.length;
+  }, 4000); // Change status every 4 seconds
+
+  // Simulate server injection status
+  const serverStatus = document.getElementById('serverStatus');
+  const serverMessages = [
+    "Connecting to server...",
+    "Injecting payload...",
+    "Bypassing security...",
+    "Accessing sensitive data...",
+    "Injection successful!",
+    "Disconnecting..."
+  ];
+  let serverIndex = 0;
+  setInterval(() => {
+    serverStatus.textContent = serverMessages[serverIndex];
+    serverIndex = (serverIndex + 1) % serverMessages.length;
+  }, 4000); // Change status every 4 seconds
+
+  // Real-time date and time update
+  const dateTimeWindow = document.getElementById('currentDateTime');
+  function updateDateTime() {
+    const now = new Date();
+    dateTimeWindow.textContent = now.toLocaleString(); // Format date and time
+  }
+  setInterval(updateDateTime, 1000); // Update every second
+  updateDateTime(); // Initial call to set the time immediately
+
+  // Check for windowanimation.gif and display it
+  const windowAnimation = document.getElementById('windowAnimation');
+  windowAnimation.style.display = 'none'; // Hide initially
+  const animationPath = 'assets/windowanimation.gif';
+  fetch(animationPath)
+    .then(response => {
+      if (response.ok) {
+        windowAnimation.style.display = 'block'; // Show if exists
+      }
+    });
+
+  // Check for evillogo.gif and replace the logo
+  const evilLogo = document.getElementById('evilLogo');
+  const logoPath = 'assets/evillogo.gif';
+  fetch(logoPath)
+    .then(response => {
+      if (response.ok) {
+        evilLogo.src = logoPath; // Replace logo if exists
+      }
+    });
+
+</script>
+</body>
+</html>
